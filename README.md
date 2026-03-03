@@ -47,5 +47,5 @@ javaUtils/
 mvn clean verify
 
 # Run the application with the example directory
-mvn exec:java -Dexec.mainClass="org.javaUtils.App" -Dexec.args="docs/example_directory"
+mvn exec:java -Dexec.mainClass="n1DirectoryAlphabetically.App" -Dexec.args="docs/example_directory"
 ```

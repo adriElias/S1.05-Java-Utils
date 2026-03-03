@@ -1,4 +1,4 @@
-package org.javaUtils;
+package n1DirectoryAlphabetically;
 
 import org.junit.jupiter.api.*;
 
