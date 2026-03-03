@@ -43,6 +43,9 @@ javaUtils/
 ## How to Run
 
 ```bash
-# Maven
-mvn test
+# Build and verify the project
+mvn clean verify
+
+# Run the application with the example directory
+mvn exec:java -Dexec.mainClass="org.javaUtils.App" -Dexec.args="docs/example_directory"
 ```
