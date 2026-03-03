@@ -13,7 +13,7 @@ public class DirectoryTreePrinter {
             throw new IllegalArgumentException("Path must not be null or blank.");
         }
         File dir = new File(path);
-        if (!isValidDirectory(dir, path)) return;
+        if (isInvalidDirectory(dir, path)) return;
 
         File[] files = listSortedFiles(dir, path);
         if (files == null) return;
@@ -21,20 +21,20 @@ public class DirectoryTreePrinter {
         printFiles(files, indent);
     }
 
-    private boolean isValidDirectory(File dir, String path) {
+    private boolean isInvalidDirectory(File dir, String path) {
         if (!dir.exists()) {
             System.err.println("[ERROR] Path does not exist: " + path);
-            return false;
+            return true;
         }
         if (!dir.isDirectory()) {
             System.err.println("[ERROR] Path is not a directory: " + path);
-            return false;
+            return true;
         }
         if (!dir.canRead()) {
             System.err.println("[ERROR] No read permission for: " + path);
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private File[] listSortedFiles(File dir, String path) {
@@ -69,4 +69,47 @@ public class DirectoryTreePrinter {
             System.err.println(indent + "  [ERROR] No read permission for subdirectory: " + dir.getName());
         }
     }
+
+    public String buildTree(String path, String indent) {
+        if (path == null || path.isBlank()) {
+            throw new IllegalArgumentException("Path must not be null or blank.");
+        }
+        File dir = new File(path);
+        if (isInvalidDirectory(dir, path)) {
+            return "[ERROR] Invalid directory: " + path + "\n";
+        }
+
+        File[] files = listSortedFiles(dir, path);
+        if (files == null) {
+            return "[ERROR] Could not list files in: " + path + "\n";
+        }
+
+        return buildFiles(files, indent);
+    }
+
+    private String buildFiles(File[] files, String indent) {
+        StringBuilder sb = new StringBuilder();
+        for (File f : files) {
+            sb.append(buildEntry(f, indent));
+            if (f.isDirectory()) {
+                sb.append(handleSubdirectoryBuild(f, indent));
+            }
+        }
+        return sb.toString();
+    }
+
+    private String buildEntry(File f, String indent) {
+        String type = f.isDirectory() ? "D" : "F";
+        String lastModified = DATE_FORMAT.format(new Date(f.lastModified()));
+        return indent + "[" + type + "] " + f.getName() + " (" + lastModified + ")\n";
+    }
+
+    private String handleSubdirectoryBuild(File dir, String indent) {
+        if (dir.canRead()) {
+            return buildTree(dir.getAbsolutePath(), indent + "  ");
+        } else {
+            return indent + "  [ERROR] No read permission for subdirectory: " + dir.getName() + "\n";
+        }
+    }
+
 }
